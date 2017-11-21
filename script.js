@@ -38,8 +38,8 @@ function initializeApp(){
 *     
 */
 function addClickHandlersToElements(){
-    $('.btn-success').click(event, handleAddClicked);
-    $('.btn-default').click(handleCancelClick)
+    $('.btn-success').click(handleAddClicked);
+    $('.btn-default').click(handleCancelClick);
 
 
 }
@@ -50,7 +50,7 @@ function addClickHandlersToElements(){
  * @return: 
        none
  */
-function handleAddClicked(event){
+function handleAddClicked(){
     addStudent();
 
 }
@@ -94,15 +94,24 @@ function renderStudentOnDom(studentObj){
     var tableDataGrade= $('<td>');
     var tableDataDelete=$('<button>').attr({
         class: "btn btn-danger",
-        onclick: null
+        onclick: null,
     }).text("Delete");
+    console.log("before ",tableDataDelete[0].studentInf);
+    tableDataDelete.click(function(){
+        tableDataDelete[0].studentInf=studentObj;
+        console.log("inside ",tableDataDelete[0].studentInf);
+        removeStudent();
+    });
+    console.log("after ",tableDataDelete[0].studentInf);
+
     var tableRow= $('<tr>');
 
-    for(var students_index=0; students_index<studentObj.length; students_index++){
-        tableDataName.text(studentObj[students_index].name);
-        tableDataCourse.text(studentObj[students_index].course);
-        tableDataGrade.text(studentObj[students_index].grade)
-    }
+    // for(var students_index=0; students_index<studentObj.length; students_index++){
+        tableDataName.text(studentObj.name);
+        tableDataCourse.text(studentObj.course);
+        tableDataGrade.text(studentObj.grade);
+
+    // }
     tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDelete);
     $('.student-list>tbody').append(tableRow);
 }
@@ -113,9 +122,9 @@ function renderStudentOnDom(studentObj){
  * @returns {undefined} none
  * @calls renderStudentOnDom, calculateGradeAverage, renderGradeAverage
  */
-function updateStudentList(students){
-  renderStudentOnDom(students);
-  renderGradeAverage(calculateGradeAverage(students));
+function updateStudentList(student){
+  renderStudentOnDom(student[student.length-1]);
+  renderGradeAverage(calculateGradeAverage(student));
 
 }
 /***************************************************************************************************
@@ -138,6 +147,17 @@ function calculateGradeAverage(students){
  */
 function renderGradeAverage(numbers){
     $('.avgGrade').text(numbers);
+}
+
+
+
+
+function removeStudent(){
+    var studentIndex = student_array.indexOf(event.target.studentInf);
+    console.log(this);
+    student_array.splice(studentIndex,1);
+    var domParent= $(event.target).parent();
+    $(domParent).remove();
 }
 
 
