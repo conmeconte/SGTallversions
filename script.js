@@ -32,6 +32,9 @@ var ajaxOptions = {
     error: functionToRunOnError
 };
 
+
+/*=========================================Functions for API========================================================*/
+
 function functionToRunOnError(error){
     console.log('Error, Danger', error);
 }
@@ -163,7 +166,7 @@ function renderStudentOnDom(studentObj){
  */
 function updateStudentList(student){
   renderStudentOnDom(student[student.length-1]);
-  renderGradeAverage(calculateGradeAverage(student));
+  renderGradeAverage(calculateGradeAverage());
 
 }
 /***************************************************************************************************
@@ -171,12 +174,12 @@ function updateStudentList(student){
  * @param: {array} students  the array of student objects
  * @returns {number}
  */
-function calculateGradeAverage(students){
+function calculateGradeAverage(){
     var totalGrade=null;
-    for (var average_index=0; average_index<students.length; average_index++){
-        totalGrade+=Number(students[average_index].grade);
+    for (var average_index=0; average_index<student_array.length; average_index++){
+        totalGrade+=Number(student_array[average_index].grade);
     }
-    return Math.round(totalGrade/(students.length));
+    return Math.round(totalGrade/(student_array.length));
 
 }
 /***************************************************************************************************
@@ -198,11 +201,9 @@ function removeStudent(){
     var domParent= $(event.target).parent();
     var domParent2=$(domParent).parent();
     $(domParent2).remove();
+    renderGradeAverage(calculateGradeAverage())
 }
 
-function pullAPI(){
-
-}
 
 
 
