@@ -20,6 +20,42 @@ $(document).ready(initializeApp);
  * ];
  */
 var student_array=[];
+var apiDataOutput={
+    api_key: 'jK3Fi1kiPx',
+};
+var ajaxOptions = {
+    method: 'post',
+    dataType: 'json',
+    data: apiDataOutput,
+    url: `http://s-apis.learningfuze.com/sgt/get`,
+    success: functionToRunOnSuccess,
+    error: functionToRunOnError
+};
+
+function functionToRunOnError(error){
+    console.log('Error, Danger', error);
+}
+
+function functionToRunOnSuccess(data){
+    console.log(data);
+    processInputData(data)
+}
+function processInputData(input){
+    for(var i=0; i<input.data.length-1; i++){
+        var temp_student_info=new StudentInfo(input.data[i].name, input.data[i].course,input.data[i].grade);
+        student_array.push(temp_student_info);
+        updateStudentList(student_array);
+
+    }
+
+
+}
+function StudentInfo(names, courses, grades){
+    this.name= names;
+    this.course=courses;
+    this.grade=grades;
+
+}
 
 /***************************************************************************************************
 * initializeApp 
@@ -29,6 +65,7 @@ var student_array=[];
 */
 function initializeApp(){
     addClickHandlersToElements();
+    $.ajax(ajaxOptions)
 }
 
 /***************************************************************************************************
@@ -40,7 +77,7 @@ function initializeApp(){
 function addClickHandlersToElements(){
     $('.btn-success').click(handleAddClicked);
     $('.btn-default').click(handleCancelClick);
-
+    $('.btn-primary').click();
 
 }
 
@@ -92,8 +129,9 @@ function renderStudentOnDom(studentObj){
     var tableDataName= $('<td>');
     var tableDataCourse= $('<td>');
     var tableDataGrade= $('<td>');
+    var tableDataDeleteTd=$('<td>');
     var tableDataDelete=$('<button>').attr({
-        class: "btn btn-danger",
+        class: "btn btn-danger btn-sm",
         onclick: null,
     }).text("Delete");
     console.log("before ",tableDataDelete[0].studentInf);
@@ -110,9 +148,10 @@ function renderStudentOnDom(studentObj){
         tableDataName.text(studentObj.name);
         tableDataCourse.text(studentObj.course);
         tableDataGrade.text(studentObj.grade);
+        tableDataDeleteTd.append(tableDataDelete);
 
     // }
-    tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDelete);
+    tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDeleteTd);
     $('.student-list>tbody').append(tableRow);
 }
 
@@ -157,9 +196,13 @@ function removeStudent(){
     console.log(this);
     student_array.splice(studentIndex,1);
     var domParent= $(event.target).parent();
-    $(domParent).remove();
+    var domParent2=$(domParent).parent();
+    $(domParent2).remove();
 }
 
+function pullAPI(){
+
+}
 
 
 
