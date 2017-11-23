@@ -20,45 +20,54 @@ $(document).ready(initializeApp);
  * ];
  */
 var student_array=[];
-var apiDataOutput={
+var apiDataInput={
     api_key: 'jK3Fi1kiPx',
+    // 'force-failure': 'timeout'
 };
 var ajaxOptions = {
     method: 'post',
     dataType: 'json',
-    data: apiDataOutput,
+    data: apiDataInput,
     url: `http://s-apis.learningfuze.com/sgt/get`,
     success: functionToRunOnSuccess,
     error: functionToRunOnError
 };
 
 
-/*=========================================Functions for API========================================================*/
+
+/*=========================================Functions for API receiving========================================================*/
 
 function functionToRunOnError(error){
     console.log('Error, Danger', error);
+    openModal(data);
 }
 
 function functionToRunOnSuccess(data){
-    console.log(data);
+    console.log('succes still working', data);
     processInputData(data)
 }
 function processInputData(input){
-    for(var i=0; i<input.data.length-1; i++){
-        var temp_student_info=new StudentInfo(input.data[i].name, input.data[i].course,input.data[i].grade);
+    student_array=[];
+    for(var i=0; i<input.data.length; i++){
+        var temp_student_info=new StudentInfo(input.data[i].id, input.data[i].name, input.data[i].course,input.data[i].grade);
         student_array.push(temp_student_info);
         updateStudentList(student_array);
 
     }
-
+    // student_array=input;
 
 }
-function StudentInfo(names, courses, grades){
+function StudentInfo(id, names, courses, grades){
+    this.id= id;
     this.name= names;
     this.course=courses;
     this.grade=grades;
 
 }
+/*=========================================Functions for API sending========================================================*/
+
+
+
 
 /***************************************************************************************************
 * initializeApp 
@@ -68,8 +77,16 @@ function StudentInfo(names, courses, grades){
 */
 function initializeApp(){
     addClickHandlersToElements();
-    $.ajax(ajaxOptions)
+    $.ajax(ajaxOptions);
+
 }
+
+function openModal(data) {
+    var modal=$('#myModal p');
+    $(modal[0]).text(data);
+    $('#myModal').show()
+}
+
 
 /***************************************************************************************************
 * addClickHandlerstoElements
@@ -80,7 +97,13 @@ function initializeApp(){
 function addClickHandlersToElements(){
     $('.btn-success').click(handleAddClicked);
     $('.btn-default').click(handleCancelClick);
-    $('.btn-primary').click();
+    $('.btn-primary').click(function(){$.ajax(ajaxOptions)});
+    $(".close").click(function(){$('#myModal').hide()});
+    $(window).click(function(event){
+        if(event.target == $('#myModal')[0]){
+            $('#myModal').hide();
+        }
+    })
 
 }
 
@@ -110,10 +133,33 @@ function handleCancelClick(){
  * @calls clearAddStudentFormInputs, updateStudentList
  */
 function addStudent(){
+
     var eachInputArray={name: document.getElementById("studentName").value, course: document.getElementById("course").value, grade: document.getElementById("studentGrade").value};
-    student_array.push(eachInputArray);
-    clearAddStudentFormInputs();
-    updateStudentList(student_array);
+    $.ajax({
+        url:'http://s-apis.learningfuze.com/sgt/create',
+        method: 'post',
+        dataType:"json",
+        data:{
+            api_key: 'jK3Fi1kiPx',
+            name: eachInputArray.name,
+            course: eachInputArray.course,
+            grade: eachInputArray.grade
+        },
+        success: function(data){
+            if(data.success) {
+                console.log('successful input sent', data);
+                eachInputArray.id = data.new_id;
+                student_array.push(eachInputArray);
+                clearAddStudentFormInputs();
+                updateStudentList(student_array);
+            }else{openModal(data.errors[0])}
+
+        },
+        error: function(){
+            console.log('did\'t go out')
+        }
+    });
+
 }
 /***************************************************************************************************
  * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -137,13 +183,10 @@ function renderStudentOnDom(studentObj){
         class: "btn btn-danger btn-sm",
         onclick: null,
     }).text("Delete");
-    console.log("before ",tableDataDelete[0].studentInf);
     tableDataDelete.click(function(){
         tableDataDelete[0].studentInf=studentObj;
-        console.log("inside ",tableDataDelete[0].studentInf);
         removeStudent();
     });
-    console.log("after ",tableDataDelete[0].studentInf);
 
     var tableRow= $('<tr>');
 
@@ -195,16 +238,39 @@ function renderGradeAverage(numbers){
 
 
 function removeStudent(){
-    var studentIndex = student_array.indexOf(event.target.studentInf);
-    console.log(this);
-    student_array.splice(studentIndex,1);
-    var domParent= $(event.target).parent();
-    var domParent2=$(domParent).parent();
-    $(domParent2).remove();
-    renderGradeAverage(calculateGradeAverage())
+    var studentObj=event.target.studentInf;
+    var studentIndex = student_array.indexOf(studentObj);
+    var domParent= $(event.target).parents('tr');
+
+    $.ajax({
+        method:'post',
+        url: 'http://s-apis.learningfuze.com/sgt/delete',
+        dataType: "json",
+        data:{
+            api_key: 'jK3Fi1kiPx',
+            student_id: studentObj.id,
+        },
+
+        success: function(data){
+            if(!data.success){
+
+                openModal(data.errors[0]);
+            }else{
+                console.log("delete completed", data);
+                student_array.splice(studentIndex,1);
+                $(domParent).remove();
+                renderGradeAverage(calculateGradeAverage());
+
+            }
+        },
+        error: function(data){
+            console.log('delete failed ', data)
+        }
+    });
+
 }
 
 
-
+/*=========================================Modal=======================================================================*/
 
 
