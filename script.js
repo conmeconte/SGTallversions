@@ -54,7 +54,6 @@ function processInputData(input){
         updateStudentList(student_array);
 
     }
-    // student_array=input;
 
 }
 function StudentInfo(id, names, courses, grades){
@@ -64,7 +63,6 @@ function StudentInfo(id, names, courses, grades){
     this.grade=grades;
 
 }
-/*=========================================Functions for API sending========================================================*/
 
 
 
@@ -97,7 +95,9 @@ function openModal(data) {
 function addClickHandlersToElements(){
     $('.btn-success').click(handleAddClicked);
     $('.btn-default').click(handleCancelClick);
-    $('.btn-primary').click(function(){$.ajax(ajaxOptions)});
+    $('.btn-primary').click(function(){
+        $('.tableRow').remove();
+        $.ajax(ajaxOptions)});
     $(".close").click(function(){$('#myModal').hide()});
     $(window).click(function(event){
         if(event.target == $('#myModal')[0]){
@@ -175,6 +175,9 @@ function clearAddStudentFormInputs(){
  * @param {object} studentObj a single student object with course, name, and grade inside
  */
 function renderStudentOnDom(studentObj){
+    // $('.tableRow').parent().remove();
+    // var parentRecreation=$('<tbody>');
+    // $('.student-list').append(parentRecreation);
     var tableDataName= $('<td>');
     var tableDataCourse= $('<td>');
     var tableDataGrade= $('<td>');
@@ -188,17 +191,17 @@ function renderStudentOnDom(studentObj){
         removeStudent();
     });
 
-    var tableRow= $('<tr>');
+    var tableRow= $('<tr>').addClass("tableRow");
 
     // for(var students_index=0; students_index<studentObj.length; students_index++){
         tableDataName.text(studentObj.name);
         tableDataCourse.text(studentObj.course);
         tableDataGrade.text(studentObj.grade);
         tableDataDeleteTd.append(tableDataDelete);
+        tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDeleteTd);
+        $('.student-list>tbody').append(tableRow);
 
     // }
-    tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDeleteTd);
-    $('.student-list>tbody').append(tableRow);
 }
 
 /***************************************************************************************************
@@ -207,9 +210,9 @@ function renderStudentOnDom(studentObj){
  * @returns {undefined} none
  * @calls renderStudentOnDom, calculateGradeAverage, renderGradeAverage
  */
-function updateStudentList(student){
-  renderStudentOnDom(student[student.length-1]);
-  renderGradeAverage(calculateGradeAverage());
+function updateStudentList(students){
+    renderStudentOnDom(students[students.length-1]);
+    renderGradeAverage(calculateGradeAverage());
 
 }
 /***************************************************************************************************
