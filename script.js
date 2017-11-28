@@ -30,7 +30,8 @@ var ajaxOptions = {
     data: apiDataInput,
     url: `http://s-apis.learningfuze.com/sgt/get`,
     success: functionToRunOnSuccess,
-    error: functionToRunOnError
+    error: functionToRunOnError,
+    timeout: 2000
 };
 
 
@@ -38,13 +39,17 @@ var ajaxOptions = {
 /*=========================================Functions for API receiving========================================================*/
 
 function functionToRunOnError(error){
+    $('*').css({ 'cursor': 'default' });
     console.log('Error, Danger', error);
-    openModal(data);
+    openModal(error.statusText);
 }
 
 function functionToRunOnSuccess(data){
-    console.log('succes still working', data);
-    processInputData(data)
+    $('*').css({ 'cursor': 'default' });
+    if(data.success){
+    console.log('success still working', data);
+    processInputData(data)}
+    else{openModal(data.error[0])}
 }
 function processInputData(input){
     student_array=[];
@@ -75,7 +80,11 @@ function StudentInfo(id, names, courses, grades){
 */
 function initializeApp(){
     addClickHandlersToElements();
-    $.ajax(ajaxOptions);
+    // $.ajax(ajaxOptions);
+    $('*').css({ 'cursor': 'progress' });
+    $.ajax(ajaxOptions)
+
+
 
 }
 
@@ -96,7 +105,8 @@ function addClickHandlersToElements(){
     $('.btn-success').click(handleAddClicked);
     $('.btn-default').click(handleCancelClick);
     $('.btn-primary').click(function(){
-        $('.tableRow').remove();
+        // $('.tableRow').remove();
+        $('.papaOfTd').empty();
         $.ajax(ajaxOptions)});
     $(".close").click(function(){$('#myModal').hide()});
     $(window).click(function(event){
@@ -175,9 +185,7 @@ function clearAddStudentFormInputs(){
  * @param {object} studentObj a single student object with course, name, and grade inside
  */
 function renderStudentOnDom(studentObj){
-    // $('.tableRow').parent().remove();
-    // var parentRecreation=$('<tbody>');
-    // $('.student-list').append(parentRecreation);
+
     var tableDataName= $('<td>');
     var tableDataCourse= $('<td>');
     var tableDataGrade= $('<td>');
