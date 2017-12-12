@@ -25,10 +25,9 @@ var apiDataInput={
     // 'force-failure': 'timeout'
 };
 var ajaxOptions = {
-    method: 'post',
+    method: 'get',
     dataType: 'json',
-    data: apiDataInput,
-    url: `http://s-apis.learningfuze.com/sgt/get`,
+    url: `http://localhost/SGT/getStudents.php`,
     success: functionToRunOnSuccess,
     error: functionToRunOnError,
     timeout: 2000
@@ -146,11 +145,10 @@ function addStudent(){
 
     var eachInputArray={name: document.getElementById("studentName").value, course: document.getElementById("course").value, grade: document.getElementById("studentGrade").value};
     $.ajax({
-        url:'http://s-apis.learningfuze.com/sgt/create',
+        url:'http://localhost/SGT/createStudent.php',
         method: 'post',
         dataType:"json",
         data:{
-            api_key: 'jK3Fi1kiPx',
             name: eachInputArray.name,
             course: eachInputArray.course,
             grade: eachInputArray.grade
@@ -255,10 +253,9 @@ function removeStudent(){
 
     $.ajax({
         method:'post',
-        url: 'http://s-apis.learningfuze.com/sgt/delete',
+        url: 'http://localhost/SGT/deleteStudents.php',
         dataType: "json",
         data:{
-            api_key: 'jK3Fi1kiPx',
             student_id: studentObj.id,
         },
 
