@@ -261,7 +261,7 @@ function removeStudent(){
         dataType: "json",
         data:{
             // api_key: 'jK3Fi1kiPx',
-            student_id: studentObj.id,
+            student_id: studentObj.id
         },
 
         success: function(data){
