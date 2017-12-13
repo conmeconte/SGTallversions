@@ -27,7 +27,8 @@ var apiDataInput={
 var ajaxOptions = {
     method: 'get',
     dataType: 'json',
-    url: `http://localhost/SGT/getStudents.php`,
+    url: `http://localhost/prototypes_C10.17/php_SGTserver/data.php`,
+    data: {"action": 'readAll'},
     success: functionToRunOnSuccess,
     error: functionToRunOnError,
     timeout: 2000
@@ -145,10 +146,11 @@ function addStudent(){
 
     var eachInputArray={name: document.getElementById("studentName").value, course: document.getElementById("course").value, grade: document.getElementById("studentGrade").value};
     $.ajax({
-        url:'http://localhost/SGT/createStudent.php',
-        method: 'post',
+        url:'http://localhost/prototypes_C10.17/php_SGTserver/data.php',
+        method: 'GET',
         dataType:"json",
         data:{
+            "action": 'insert',
             name: eachInputArray.name,
             course: eachInputArray.course,
             grade: eachInputArray.grade
@@ -252,10 +254,11 @@ function removeStudent(){
     var domParent= $(event.target).parents('tr');
 
     $.ajax({
-        method:'post',
-        url: 'http://localhost/SGT/deleteStudents.php',
+        method:'get',
+        url: 'http://localhost/prototypes_C10.17/php_SGTserver/data.php',
         dataType: "json",
         data:{
+            "action": 'delete',
             student_id: studentObj.id,
         },
 
