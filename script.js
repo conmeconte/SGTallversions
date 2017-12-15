@@ -24,11 +24,13 @@ var apiDataInput={
     api_key: 'jK3Fi1kiPx',
     // 'force-failure': 'timeout'
 };
+
+
 var ajaxOptions = {
-    method: 'post',
+    method: 'GET',
     dataType: 'json',
-    data: apiDataInput,
-    url: `http://s-apis.learningfuze.com/sgt/get`,
+    // data: apiDataInput,
+    url: `http://localhost/SGT/read.php`,
     success: functionToRunOnSuccess,
     error: functionToRunOnError,
     timeout: 2000
