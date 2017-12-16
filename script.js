@@ -21,7 +21,7 @@ $(document).ready(initializeApp);
  */
 var student_array=[];
 var apiDataOutput={
-    api_key: 'jK3Fi1kiPx',
+    api_key: 'jK3Fi1kiPx'
 };
 var ajaxOptions = {
     method: 'post',
@@ -195,15 +195,44 @@ function removeStudent(){
     var studentIndex = student_array.indexOf(event.target.studentInf);
     console.log(this);
     student_array.splice(studentIndex,1);
-    var domParent= $(event.target).parent();
-    var domParent2=$(domParent).parent();
-    $(domParent2).remove();
+    // var domParent= $(event.target).parent();
+    // var domParent2=$(domParent).parent();
+    // $(domParent2).remove();
+    $(event.target).parents('tr').remove();
 }
 
-function pullAPI(){
+/*==============================================================================================================*/
+function renderStudentOnDom(studentObj){
+    var new_tr = $(‘<tr>‘);
+    var new_td_name = $(‘<td>‘).text(studentObj.name);
+    var new_td_course = $(‘<td>‘).text(studentObj.course);
+    var new_td_grade = $(‘<td>‘).text(studentObj.grade);
+
+    var new_td_button = $(‘<td>‘);
+    var delete_button = $(‘<button>’,{
+    class: ‘delete btn btn-danger’,
+        text: ‘Delete’,
+    });
+
+    $(new_td_button).append(delete_button);
+
+    //delete button click handler
+    delete_button.on(‘click’, function(){
+        //store data attribute studentData
+        var a = new_tr;
+        delete_button[0].studentData = studentObj;
+        removeStudent(a);
+    })
+
+    new_tr.append(new_td_name, new_td_course, new_td_grade, new_td_button);
+    $(‘tbody’).append(new_tr);
 
 }
+function removeStudent(a){
 
-
+    var studentIndex = student_array.indexOf(event.target.studentData);
+    student_array.splice(studentIndex, 1);
+    $(a).remove();
+}
 
 
