@@ -1,4 +1,6 @@
-<?php
+
+
+ <?php
  header('Access-Control-Allow-Origin: *');
 $result = [
     "success" => true,
@@ -14,3 +16,4 @@ $result = json_encode($result);
 echo $result;
 
 ?>
+
