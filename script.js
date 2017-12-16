@@ -20,42 +20,62 @@ $(document).ready(initializeApp);
  * ];
  */
 var student_array=[];
+<<<<<<< HEAD
 var apiDataOutput={
     api_key: 'jK3Fi1kiPx'
+=======
+var apiDataInput={
+    api_key: 'jK3Fi1kiPx',
+    // 'force-failure': 'timeout'
+>>>>>>> 94bb95f8e2002cf78108ec58eabadcfbb4a9a2a6
 };
 var ajaxOptions = {
     method: 'post',
     dataType: 'json',
-    data: apiDataOutput,
+    data: apiDataInput,
     url: `http://s-apis.learningfuze.com/sgt/get`,
     success: functionToRunOnSuccess,
-    error: functionToRunOnError
+    error: functionToRunOnError,
+    timeout: 2000
 };
 
+
+
+/*=========================================Functions for API receiving========================================================*/
+
 function functionToRunOnError(error){
+    $('*').css({ 'cursor': 'default' });
     console.log('Error, Danger', error);
+    openModal(error.statusText);
 }
 
 function functionToRunOnSuccess(data){
-    console.log(data);
-    processInputData(data)
+    $('*').css({ 'cursor': 'default' });
+    if(data.success){
+    console.log('success still working', data);
+    processInputData(data)}
+    else{openModal(data.error[0])}
 }
 function processInputData(input){
-    for(var i=0; i<input.data.length-1; i++){
-        var temp_student_info=new StudentInfo(input.data[i].name, input.data[i].course,input.data[i].grade);
+    student_array=[];
+    for(var i=0; i<input.data.length; i++){
+        var temp_student_info=new StudentInfo(input.data[i].id, input.data[i].name, input.data[i].course,input.data[i].grade);
         student_array.push(temp_student_info);
         updateStudentList(student_array);
 
     }
 
-
 }
-function StudentInfo(names, courses, grades){
+function StudentInfo(id, names, courses, grades){
+    this.id= id;
     this.name= names;
     this.course=courses;
     this.grade=grades;
 
 }
+
+
+
 
 /***************************************************************************************************
 * initializeApp 
@@ -65,8 +85,20 @@ function StudentInfo(names, courses, grades){
 */
 function initializeApp(){
     addClickHandlersToElements();
+    // $.ajax(ajaxOptions);
+    $('*').css({ 'cursor': 'progress' });
     $.ajax(ajaxOptions)
+
+
+
 }
+
+function openModal(data) {
+    var modal=$('#myModal p');
+    $(modal[0]).text(data);
+    $('#myModal').show()
+}
+
 
 /***************************************************************************************************
 * addClickHandlerstoElements
@@ -77,7 +109,16 @@ function initializeApp(){
 function addClickHandlersToElements(){
     $('.btn-success').click(handleAddClicked);
     $('.btn-default').click(handleCancelClick);
-    $('.btn-primary').click();
+    $('.btn-primary').click(function(){
+        // $('.tableRow').remove();
+        $('.papaOfTd').empty();
+        $.ajax(ajaxOptions)});
+    $(".close").click(function(){$('#myModal').hide()});
+    $(window).click(function(event){
+        if(event.target == $('#myModal')[0]){
+            $('#myModal').hide();
+        }
+    })
 
 }
 
@@ -107,10 +148,33 @@ function handleCancelClick(){
  * @calls clearAddStudentFormInputs, updateStudentList
  */
 function addStudent(){
+
     var eachInputArray={name: document.getElementById("studentName").value, course: document.getElementById("course").value, grade: document.getElementById("studentGrade").value};
-    student_array.push(eachInputArray);
-    clearAddStudentFormInputs();
-    updateStudentList(student_array);
+    $.ajax({
+        url:'http://s-apis.learningfuze.com/sgt/create',
+        method: 'post',
+        dataType:"json",
+        data:{
+            api_key: 'jK3Fi1kiPx',
+            name: eachInputArray.name,
+            course: eachInputArray.course,
+            grade: eachInputArray.grade
+        },
+        success: function(data){
+            if(data.success) {
+                console.log('successful input sent', data);
+                eachInputArray.id = data.new_id;
+                student_array.push(eachInputArray);
+                clearAddStudentFormInputs();
+                updateStudentList(student_array);
+            }else{openModal(data.errors[0])}
+
+        },
+        error: function(){
+            console.log('did\'t go out')
+        }
+    });
+
 }
 /***************************************************************************************************
  * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -126,6 +190,7 @@ function clearAddStudentFormInputs(){
  * @param {object} studentObj a single student object with course, name, and grade inside
  */
 function renderStudentOnDom(studentObj){
+
     var tableDataName= $('<td>');
     var tableDataCourse= $('<td>');
     var tableDataGrade= $('<td>');
@@ -134,25 +199,22 @@ function renderStudentOnDom(studentObj){
         class: "btn btn-danger btn-sm",
         onclick: null,
     }).text("Delete");
-    console.log("before ",tableDataDelete[0].studentInf);
     tableDataDelete.click(function(){
         tableDataDelete[0].studentInf=studentObj;
-        console.log("inside ",tableDataDelete[0].studentInf);
         removeStudent();
     });
-    console.log("after ",tableDataDelete[0].studentInf);
 
-    var tableRow= $('<tr>');
+    var tableRow= $('<tr>').addClass("tableRow");
 
     // for(var students_index=0; students_index<studentObj.length; students_index++){
         tableDataName.text(studentObj.name);
         tableDataCourse.text(studentObj.course);
         tableDataGrade.text(studentObj.grade);
         tableDataDeleteTd.append(tableDataDelete);
+        tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDeleteTd);
+        $('.student-list>tbody').append(tableRow);
 
     // }
-    tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDeleteTd);
-    $('.student-list>tbody').append(tableRow);
 }
 
 /***************************************************************************************************
@@ -161,9 +223,9 @@ function renderStudentOnDom(studentObj){
  * @returns {undefined} none
  * @calls renderStudentOnDom, calculateGradeAverage, renderGradeAverage
  */
-function updateStudentList(student){
-  renderStudentOnDom(student[student.length-1]);
-  renderGradeAverage(calculateGradeAverage(student));
+function updateStudentList(students){
+    renderStudentOnDom(students[students.length-1]);
+    renderGradeAverage(calculateGradeAverage());
 
 }
 /***************************************************************************************************
@@ -171,12 +233,12 @@ function updateStudentList(student){
  * @param: {array} students  the array of student objects
  * @returns {number}
  */
-function calculateGradeAverage(students){
+function calculateGradeAverage(){
     var totalGrade=null;
-    for (var average_index=0; average_index<students.length; average_index++){
-        totalGrade+=Number(students[average_index].grade);
+    for (var average_index=0; average_index<student_array.length; average_index++){
+        totalGrade+=Number(student_array[average_index].grade);
     }
-    return Math.round(totalGrade/(students.length));
+    return Math.round(totalGrade/(student_array.length));
 
 }
 /***************************************************************************************************
@@ -192,6 +254,7 @@ function renderGradeAverage(numbers){
 
 
 function removeStudent(){
+<<<<<<< HEAD
     var studentIndex = student_array.indexOf(event.target.studentInf);
     console.log(this);
     student_array.splice(studentIndex,1);
@@ -212,6 +275,36 @@ function renderStudentOnDom(studentObj){
     var delete_button = $(‘<button>’,{
     class: ‘delete btn btn-danger’,
         text: ‘Delete’,
+=======
+    var studentObj=event.target.studentInf;
+    var studentIndex = student_array.indexOf(studentObj);
+    var domParent= $(event.target).parents('tr');
+
+    $.ajax({
+        method:'post',
+        url: 'http://s-apis.learningfuze.com/sgt/delete',
+        dataType: "json",
+        data:{
+            api_key: 'jK3Fi1kiPx',
+            student_id: studentObj.id,
+        },
+
+        success: function(data){
+            if(!data.success){
+
+                openModal(data.errors[0]);
+            }else{
+                console.log("delete completed", data);
+                student_array.splice(studentIndex,1);
+                $(domParent).remove();
+                renderGradeAverage(calculateGradeAverage());
+
+            }
+        },
+        error: function(data){
+            console.log('delete failed ', data)
+        }
+>>>>>>> 94bb95f8e2002cf78108ec58eabadcfbb4a9a2a6
     });
 
     $(new_td_button).append(delete_button);
@@ -227,6 +320,7 @@ function renderStudentOnDom(studentObj){
     new_tr.append(new_td_name, new_td_course, new_td_grade, new_td_button);
     $(‘tbody’).append(new_tr);
 
+<<<<<<< HEAD
 }
 function removeStudent(a){
 
@@ -234,5 +328,8 @@ function removeStudent(a){
     student_array.splice(studentIndex, 1);
     $(a).remove();
 }
+=======
+/*=========================================Modal=======================================================================*/
+>>>>>>> 94bb95f8e2002cf78108ec58eabadcfbb4a9a2a6
 
 
