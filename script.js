@@ -47,6 +47,7 @@ function functionToRunOnError(error){
 }
 
 function functionToRunOnSuccess(data){
+    console.log(`it came throught ${data.success}`)
     $('*').css({ 'cursor': 'default' });
     if(data.success){
     console.log('success still working', data);
