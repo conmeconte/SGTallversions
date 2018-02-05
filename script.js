@@ -45,29 +45,38 @@ function functionToRunOnError(error){
 }
 
 function functionToRunOnSuccess(data){
+    console.log(`it came throught ${data.success}`)
     $('*').css({ 'cursor': 'default' });
     if(data.success){
     console.log('success still working', data);
-    processInputData(data)}
+    processInputData(data.data)}
     else{openModal(data.error[0])}
 }
+// function processInputData(input){
+//     student_array=[];
+//     for(var i=0; i<input.data.length; i++){
+//         var temp_student_info=new StudentInfo(input.data[i].id, input.data[i].name, input.data[i].course,input.data[i].grade);
+//         student_array.push(temp_student_info);
+//         updateStudentList(student_array);
+
+//     }
+// };
+// // function StudentInfo(id, names, courses, grades){
+// //     this.id= id;
+// //     this.name= names;
+// //     this.course=courses;
+// //     this.grade=grades;
+
+// // }
 function processInputData(input){
-    student_array=[];
-    for(var i=0; i<input.data.length; i++){
-        var temp_student_info=new StudentInfo(input.data[i].id, input.data[i].name, input.data[i].course,input.data[i].grade);
-        student_array.push(temp_student_info);
-        updateStudentList(student_array);
 
-    }
+/* Responsively Creates the table header depending on the pulled information */    
+    renderHeaderOnDom(input[0]);            
+    input.forEach(function(element){
+        student_array.push(element);
+        updateStudentList(element)}); 
+};
 
-}
-function StudentInfo(id, names, courses, grades){
-    this.id= id;
-    this.name= names;
-    this.course=courses;
-    this.grade=grades;
-
-}
 
 
 
@@ -184,12 +193,36 @@ function clearAddStudentFormInputs(){
  * into the .student_list tbody
  * @param {object} studentObj a single student object with course, name, and grade inside
  */
-function renderStudentOnDom(studentObj){
+// function renderStudentOnDom(studentObj){
 
-    var tableDataName= $('<td>');
-    var tableDataCourse= $('<td>');
-    var tableDataGrade= $('<td>');
-    var tableDataDeleteTd=$('<td>');
+//     var tableDataName= $('<td>');
+//     var tableDataCourse= $('<td>');
+//     var tableDataGrade= $('<td>');
+//     var tableDataDeleteTd=$('<td>');
+//     var tableDataDelete=$('<button>').attr({
+//         class: "btn btn-danger btn-sm",
+//         onclick: null,
+//     }).text("Delete");
+//     tableDataDelete.click(function(){
+//         tableDataDelete[0].studentInf=studentObj;
+//         removeStudent();
+//     });
+
+//     var tableRow= $('<tr>').addClass("tableRow");
+
+//     // for(var students_index=0; students_index<studentObj.length; students_index++){
+//         tableDataName.text(studentObj.name);
+//         tableDataCourse.text(studentObj.course);
+//         tableDataGrade.text(studentObj.grade);
+//         tableDataDeleteTd.append(tableDataDelete);
+//         tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDeleteTd);
+//         $('.student-list>tbody').append(tableRow);
+
+//     // }
+// }
+
+function renderStudentOnDom(studentObj){
+    var tableRow= $('<tr>').addClass("tableRow");
     var tableDataDelete=$('<button>').attr({
         class: "btn btn-danger btn-sm",
         onclick: null,
@@ -198,19 +231,24 @@ function renderStudentOnDom(studentObj){
         tableDataDelete[0].studentInf=studentObj;
         removeStudent();
     });
-
-    var tableRow= $('<tr>').addClass("tableRow");
-
-    // for(var students_index=0; students_index<studentObj.length; students_index++){
-        tableDataName.text(studentObj.name);
-        tableDataCourse.text(studentObj.course);
-        tableDataGrade.text(studentObj.grade);
-        tableDataDeleteTd.append(tableDataDelete);
-        tableRow.append(tableDataName, tableDataCourse, tableDataGrade,tableDataDeleteTd);
-        $('.student-list>tbody').append(tableRow);
-
-    // }
+    
+    for(var prop in studentObj){
+        var tableData=$('<td>').text(studentObj[prop]);
+        tableRow.append(tableData);
+    }
+    tableRow.append(tableDataDelete);
+    $('.student-list>tbody').append(tableRow);
 }
+
+/* Responsively Creates the table header depending on the pulled information */    
+
+function renderHeaderOnDom(studentObj){
+        for (var prop in studentObj){
+            var tableHeader= $("<th>").text(`${prop}`);
+            $('#display_info').append(tableHeader);
+        }
+
+    }
 
 /***************************************************************************************************
  * updateStudentList - centralized function to update the average and call student list update
@@ -218,8 +256,8 @@ function renderStudentOnDom(studentObj){
  * @returns {undefined} none
  * @calls renderStudentOnDom, calculateGradeAverage, renderGradeAverage
  */
-function updateStudentList(students){
-    renderStudentOnDom(students[students.length-1]);
+function updateStudentList(student){
+    renderStudentOnDom(student);
     renderGradeAverage(calculateGradeAverage());
 
 }
@@ -231,7 +269,8 @@ function updateStudentList(students){
 function calculateGradeAverage(){
     var totalGrade=null;
     for (var average_index=0; average_index<student_array.length; average_index++){
-        totalGrade+=Number(student_array[average_index].grade);
+        //need to name grade "Grade" in order for averaging function to work
+        totalGrade+=Number(student_array[average_index].Grade);
     }
     return Math.round(totalGrade/(student_array.length));
 
