@@ -24,13 +24,11 @@ var apiDataInput={
     api_key: 'jK3Fi1kiPx',
     // 'force-failure': 'timeout'
 };
-
-
 var ajaxOptions = {
-    method: 'GET',
+    method: 'get',
     dataType: 'json',
     // data: apiDataInput,
-    url: `http://localhost/SGT/read.php`,
+    url: `./read.php`, 
     success: functionToRunOnSuccess,
     error: functionToRunOnError,
     timeout: 2000
@@ -281,9 +279,17 @@ function removeStudent(){
         }
     });
 
+    $(new_td_button).append(delete_button);
+
+    //delete button click handler
+    delete_button.on("click", function(){
+        //store data attribute studentData
+        var a = new_tr;
+        delete_button[0].studentData = studentObj;
+        removeStudent(a);
+    })
+
+    new_tr.append(new_td_name, new_td_course, new_td_grade, new_td_button);
+    $("tbody").append(new_tr);
+
 }
-
-
-/*=========================================Modal=======================================================================*/
-
-
