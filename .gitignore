@@ -1,4 +1,5 @@
 .DS_Store
 .idea
 README.md
-mysqlcredentials.php
+mysqlcredentials.js
+node_modules
