@@ -1,9 +1,6 @@
 <?php
 require_once('mysqlcredentials.php');
 
-
-
-
 $query=  "SELECT * FROM students ";
 
 $result=mysqli_query($conn, $query);
