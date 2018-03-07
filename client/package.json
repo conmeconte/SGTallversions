@@ -1,7 +1,7 @@
 {
   "name": "SGT_REACT",
   "version": "1.0.0",
-  "description": "Student Grade Table with React",
+  "description": "Student Grade Table with React & node.js",
   "main": "index.js",
   "proxy": {
     "/server/*": {
@@ -13,7 +13,7 @@
     "bundle": "node_modules/.bin/webpack --config webpack.deploy.config.js --progress --colors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sangwoo",
+  "author": "Chung Hwan Hong",
   "license": "ISC",
   "repository": {
     "type": "git",
