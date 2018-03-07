@@ -1,6 +1,6 @@
 var credentials ={
-    user: 'root',
-    password: 'root',
+    user: 'root', //root
+    password: 'root',   //root
     host: 'localhost',
     port: 3306,
     database: 'c1017db'

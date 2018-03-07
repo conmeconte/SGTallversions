@@ -16,6 +16,7 @@ server.use(function(req, res, next) {
     res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, OPTIONS");
     next();
 });
+//"next" is middleware?
 
 
 
