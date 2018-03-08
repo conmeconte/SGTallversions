@@ -6,6 +6,9 @@
   "proxy": {
     "/server/*": {
       "target": "http://localhost"
+    },
+    "/api/*": {
+      "target": "http://localhost:5500"
     }
   },
   "scripts": {

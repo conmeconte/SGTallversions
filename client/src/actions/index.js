@@ -4,14 +4,12 @@ import types from './types';
 import axios from 'axios';
 
 
-
-
 export function getStudents(url='php'){
-
+    console.log('reached'); 
     if(url == 'php'){
         url = '/server/php/server.php?resource=students'
     }else if(url === 'node'){
-        url = 'http://sgtnode.sangwoo.me/students'
+        url = '/api/students'
     }
 
     const request = axios.get(url)
@@ -28,7 +26,7 @@ export function addStudent(route='php', name, course, grade){
     if(route === 'php'){
         route = '/server/php/server.php?resource=add_student'
     }else if(route === 'node'){
-        route = 'http://sgtnode.sangwoo.me/addStudent'
+        route = '/api/addStudent'
     }
 
     const request = axios.post(route, {
@@ -51,7 +49,7 @@ export function deleteStudent(route='php', id){
     if(route === 'php'){
         route = '/server/php/server.php?resource=delete_student'
     }else if( route === 'node' ) {
-        route = 'http://sgtnode.sangwoo.me/deleteStudent'
+        route = '/api/deleteStudent'
     }
 
     const request = axios.post(route,{
@@ -71,7 +69,7 @@ export function editStudent(route='php' ,name, course, grade, id){
     if(route === 'php'){
         route = '/server/php/server.php?resource=edit_student'
     }else if(route === 'node'){
-        route = 'http://sgtnode.sangwoo.me/editStudent'
+        route = '/api/editStudent'
     }
 
     const request = axios.post(route,{
