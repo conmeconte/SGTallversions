@@ -20,7 +20,7 @@ server.use(function(req, res, next){
 });
 
 
-server.get('/students', function(req, res){
+server.get('/api/students', function(req, res){
     const db = mysql.createConnection(credentials);
     db.query("SELECT id, name, grade, course FROM students", function(error, results, fields){
         const output = {
@@ -42,7 +42,7 @@ server.get('/students', function(req, res){
 })
 
 
-server.post('/addStudent', function(req, res){
+server.post('/api/addStudent', function(req, res){
     const db = mysql.createConnection(credentials);
     console.log(req.body);
     // console.log(JSON.stringify(req.body));
@@ -68,7 +68,7 @@ server.post('/addStudent', function(req, res){
 
 });
 
-server.post('/deleteStudent', function(req, res){
+server.post('/api/deleteStudent', function(req, res){
     const db = mysql.createConnection(credentials);
     console.log('req.body yo::',req.body);
     db.query(`DELETE FROM students WHERE id = ${req.body.id}`, function(error, results, fields){
@@ -91,7 +91,7 @@ server.post('/deleteStudent', function(req, res){
     });
 });
 
-server.post('/editStudent', function(req,res){
+server.post('/api/editStudent', function(req,res){
     const db = mysql.createConnection(credentials);
     db.query(`UPDATE students SET name = '${req.body.name}', course = '${req.body.course}', grade = ${req.body.grade} WHERE id = ${req.body.id}`, function(error, results, fields){
         const output = {
